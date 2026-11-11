@@ -1,0 +1,50 @@
+name: 同步路由规则
+
+on:
+  schedule:
+    # 每天北京时间 10:17 跑一次
+    - cron: "17 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 下载 Xray（用来实际加载规则文件）
+        run: |
+          curl -fsSL --retry 5 -o xray.zip https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip
+          unzip -q xray.zip -d "$RUNNER_TEMP/xray"
+          "$RUNNER_TEMP/xray/xray" version | head -1
+
+      - name: 下载并校验上游规则
+        id: sync
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          REQUIRE_XRAY: "1"
+        run: XRAY_BIN="$RUNNER_TEMP/xray/xray" python3 scripts/sync.py
+
+      - name: 发布
+        if: steps.sync.outputs.publish == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.sync.outputs.tag }}
+        run: |
+          # 记录当前版本。定时任务在仓库长期没有提交时会被 GitHub 自动停用，这次提交也用来保持活跃
+          cp out/summary.json latest.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add latest.json
+          git commit -m "更新到 $TAG"
+          git push
+          gh release create "$TAG" out/dlc.dat out/geoip-only-cn-private.dat out/summary.json \
+            --title "$TAG" --notes "校验通过后从上游同步。详情见 summary.json。" --latest
