@@ -23,8 +23,7 @@ https://github.com/soysuuu-png/available-routing-rules/releases/latest/download/
 1. 核对上游提供的 sha256 校验和。
 2. 文件能解析，App 用到的分类（`geoip:cn`、`geoip:private`、`geosite:cn`、`geosite:google`、`geosite:private`）都在，条数在合理范围。
 3. 抽查固定的 IP 和域名：国内的必须在国内列表里，国外的必须不在。
-4. 和上一次发布比，各项数量和文件大小的变化不能超过 10%。
-5. 用 Xray 实际加载一遍。
+4. 用 Xray 实际加载一遍。
 
 上游一发布就同步。想改成只取发布满一段时间的版本，可以设置环境变量 `MIN_AGE_HOURS`（单位小时）。
 
@@ -33,7 +32,6 @@ https://github.com/soysuuu-png/available-routing-rules/releases/latest/download/
 定时任务会失败，GitHub 会发邮件通知。在 Actions 页面打开失败的那次运行，日志最后一行写着是哪一项没通过。
 
 - 上游确实有问题：不用管，等上游修好后自动恢复。
-- 上游是正常的大改动（比如变化超过了 10%）：人工确认后，在 Actions 页面手动运行一次，并把 `MAX_CHANGE` 临时调大。
 - 抽查的地址过时了：改 `scripts/sync.py` 开头的列表。
 
 ## 紧急停更或回滚

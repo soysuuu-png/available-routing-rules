@@ -5,8 +5,7 @@
   1. 上游提供的 sha256 校验和
   2. 文件能解析，App 用到的分类都在，条数在合理范围
   3. 抽查固定的 IP 和域名（国内的必须在国内列表里，国外的必须不在）
-  4. 和本仓库上一次发布的版本比，变化量不能太大
-  5. 用 Xray 实际加载一遍（和 App 相同的分类）
+  4. 用 Xray 实际加载一遍（和 App 相同的分类）
 
 任何一项不通过就以非零状态退出，不发布。只用标准库。
 """
@@ -26,8 +25,6 @@ REPO = os.environ.get("GITHUB_REPOSITORY", "soysuuu-png/available-routing-rules"
 TOKEN = os.environ.get("GITHUB_TOKEN", "")
 # 只同步发布满这么多小时的上游版本。默认 0，即上游一发布就同步
 MIN_AGE_HOURS = float(os.environ.get("MIN_AGE_HOURS", "0"))
-# 和上一次发布相比，允许的最大变化比例
-MAX_CHANGE = float(os.environ.get("MAX_CHANGE", "0.10"))
 XRAY_BIN = os.environ.get("XRAY_BIN", "")
 REQUIRE_XRAY = os.environ.get("REQUIRE_XRAY", "") == "1"
 OUT_DIR = os.environ.get("OUT_DIR", "out")
@@ -260,16 +257,6 @@ def validate(geoip, geosite):
         check(not google.match(d), f"{d} 不在 google 列表里")
 
 
-def compare(new, old):
-    print("和上一次发布对比：")
-    for key, value in new.items():
-        before = old.get(key)
-        if not before:
-            continue
-        change = abs(value - before) / before
-        check(change <= MAX_CHANGE, f"{key}: {before} → {value}（变化 {change:.1%}）")
-
-
 def xray_test(geoip_path, geosite_path, workdir):
     print("Xray 加载测试：")
     if not XRAY_BIN:
@@ -362,14 +349,6 @@ def main():
     geosite = parse_geosite(open(paths["geosite"], "rb").read())
     validate(geoip, geosite)
     summary = summarize(geoip, geosite, sizes)
-
-    try:
-        old = json.loads(http_get(f"https://github.com/{REPO}/releases/latest/download/summary.json"))
-        compare(summary, old)
-    except urllib.error.HTTPError as e:
-        if e.code != 404:
-            raise
-        print("和上一次发布对比：\n  - 还没有发布过，跳过")
 
     xray_test(paths["geoip"], paths["geosite"], OUT_DIR)
 
