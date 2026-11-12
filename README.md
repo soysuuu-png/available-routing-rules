@@ -20,12 +20,13 @@ https://github.com/soysuuu-png/available-routing-rules/releases/latest/download/
 
 脚本是 `scripts/sync.py`，定时任务是 `.github/workflows/sync.yml`。
 
-1. 只取发布满 48 小时的上游版本，给社区留出发现问题的时间。
-2. 核对上游提供的 sha256 校验和。
-3. 文件能解析，App 用到的分类（`geoip:cn`、`geoip:private`、`geosite:cn`、`geosite:google`、`geosite:private`）都在，条数在合理范围。
-4. 抽查固定的 IP 和域名：国内的必须在国内列表里，国外的必须不在。
-5. 和上一次发布比，各项数量和文件大小的变化不能超过 10%。
-6. 用 Xray 实际加载一遍。
+1. 核对上游提供的 sha256 校验和。
+2. 文件能解析，App 用到的分类（`geoip:cn`、`geoip:private`、`geosite:cn`、`geosite:google`、`geosite:private`）都在，条数在合理范围。
+3. 抽查固定的 IP 和域名：国内的必须在国内列表里，国外的必须不在。
+4. 和上一次发布比，各项数量和文件大小的变化不能超过 10%。
+5. 用 Xray 实际加载一遍。
+
+上游一发布就同步。想改成只取发布满一段时间的版本，可以设置环境变量 `MIN_AGE_HOURS`（单位小时）。
 
 ## 校验不通过怎么办
 

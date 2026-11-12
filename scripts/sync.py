@@ -24,8 +24,8 @@ import urllib.request
 
 REPO = os.environ.get("GITHUB_REPOSITORY", "soysuuu-png/available-routing-rules")
 TOKEN = os.environ.get("GITHUB_TOKEN", "")
-# 只同步发布满这么多小时的上游版本，给社区留出发现问题的时间
-MIN_AGE_HOURS = float(os.environ.get("MIN_AGE_HOURS", "48"))
+# 只同步发布满这么多小时的上游版本。默认 0，即上游一发布就同步
+MIN_AGE_HOURS = float(os.environ.get("MIN_AGE_HOURS", "0"))
 # 和上一次发布相比，允许的最大变化比例
 MAX_CHANGE = float(os.environ.get("MAX_CHANGE", "0.10"))
 XRAY_BIN = os.environ.get("XRAY_BIN", "")
