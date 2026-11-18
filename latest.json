@@ -1,13 +1,13 @@
 {
   "geoip_size": 236475,
-  "geosite_size": 2416805,
+  "geosite_size": 2416833,
   "cn_ipv4_ranges": 8161,
   "cn_ipv4_addresses": 352067812,
   "cn_domains": 6739,
   "google_domains": 966,
   "geosite_categories": 1557,
   "upstream": {
-    "geosite": "20261116043813",
+    "geosite": "20261118003829",
     "geoip": "202611080027"
   }
 }
